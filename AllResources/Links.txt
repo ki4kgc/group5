@@ -1,1 +1,3 @@
 Links
+http://tuxthink.blogspot.com/2011/04/wait-queues.html
+http://tuxthink.blogspot.com/2010/10/writing-example-driver-from-scratch.html
