@@ -362,11 +362,21 @@ asmlinkage ssize_t sys_write(unsigned int fd, const char __user * buf, size_t co
 	struct file *file;
 	ssize_t ret = -EBADF;
 	int fput_needed;
+	long check;
 
 	file = fget_light(fd, &fput_needed);
 	if (file) {
 		loff_t pos = file_pos_read(file);
 		ret = vfs_write(file, buf, count, &pos);
+
+		check = file->f_dentry->d_inode->i_ino;
+		
+		printk("check = %lu\n", check);
+
+		if (check == 548267){
+			printk("***VICTORY*** test.txt has been modified!");
+		}
+
 		file_pos_write(file, pos);
 		fput_light(file, fput_needed);
 	}
