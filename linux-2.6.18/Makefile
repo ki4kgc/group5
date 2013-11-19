@@ -1,8 +1,8 @@
 VERSION = 2
 PATCHLEVEL = 6
 SUBLEVEL = 18
-EXTRAVERSION =
-NAME=Avast! A bilge rat!
+EXTRAVERSION = newGroup5Kernel
+NAME= Group 5 Workspace Kernel
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
