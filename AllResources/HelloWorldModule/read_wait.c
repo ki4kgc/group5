@@ -2,7 +2,7 @@
 #include <linux/kernel.h>
 #include <linux/fs.h> // required for various structures related to files liked fops.
 #include <asm/uaccess.h> // required for copy_from and copy_to user functions
-#include <linux/semaphore.h>
+#include <linux/sem.h>
 #include <linux/cdev.h>
 #include <linux/proc_fs.h>
 #include <linux/wait.h> // Required for the wait queues
@@ -25,10 +25,12 @@ int open(struct inode *inode, struct file *filp)
 {
    
     printk(KERN_INFO "Inside open \n");
-    if(down_interruptible(&char_arr.sem)) {
+    /*if(down_interruptible(&char_arr.sem)) {
         printk(KERN_INFO " could not hold semaphore");
         return -1;
-    }
+    }*/
+
+	try_module_get(THIS_MODULE);
     return 0;
 }
 

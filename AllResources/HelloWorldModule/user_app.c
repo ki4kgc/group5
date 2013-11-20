@@ -6,7 +6,8 @@ int main() {
   int i, fd;
   char ch, write_buf[100],read_buf[100];
 
-  fd = open("/root/Desktop/freezer", O_RDWR);
+  fd = open("/root/Desktop/", O_RDWR);
+ 
 
   if (fd == -1) {
     printf("Error opening file\n");
