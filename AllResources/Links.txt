@@ -6,6 +6,7 @@ http://lwn.net/Articles/287435/
 http://www.win.tue.nl/~aeb/linux/vfs/trail-2.html
 http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0471c/Bacbedji.html
 http://www.tecmint.com/linux-directory-structure-and-important-files-paths-explained/
+http://www.win.tue.nl/~aeb/linux/lk/lk-8.html
 
 Tutorials:
 http://www.linuxchix.org/content/courses/kernel_hacking/lesson1
