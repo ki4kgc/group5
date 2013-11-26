@@ -1,8 +1,8 @@
 VERSION = 2
 PATCHLEVEL = 6
 SUBLEVEL = 18
-EXTRAVERSION =
-NAME=Avast! A bilge rat!
+EXTRAVERSION =group5
+NAME=Frozen File System!
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
