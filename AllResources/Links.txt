@@ -3,6 +3,7 @@ http://tuxthink.blogspot.com/2011/04/wait-queues.html
 http://tuxthink.blogspot.com/2010/10/writing-example-driver-from-scratch.html
 http://rplinux.blogspot.com/2009/10/kernel-wait-queues.html
 http://lwn.net/Articles/287435/
+http://www.win.tue.nl/~aeb/linux/vfs/trail-2.html
 
 Tutorials:
 http://www.linuxchix.org/content/courses/kernel_hacking/lesson1
