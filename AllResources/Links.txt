@@ -4,6 +4,8 @@ http://tuxthink.blogspot.com/2010/10/writing-example-driver-from-scratch.html
 http://rplinux.blogspot.com/2009/10/kernel-wait-queues.html
 http://lwn.net/Articles/287435/
 http://www.win.tue.nl/~aeb/linux/vfs/trail-2.html
+http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0471c/Bacbedji.html
+http://www.tecmint.com/linux-directory-structure-and-important-files-paths-explained/
 
 Tutorials:
 http://www.linuxchix.org/content/courses/kernel_hacking/lesson1
