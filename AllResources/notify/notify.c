@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <linux/inotify.h>
+#include <string.h>
  
 #define MAX_EVENTS 1024 /*Max. number of events to process at one go*/
 #define LEN_NAME 16 /*Assuming that the length of the filename won't exceed 16 bytes*/
@@ -13,23 +14,25 @@ int main(int argc, char **argv)
 	int length, i = 0, wd;
   	int fd;
   	char buffer[BUF_LEN];
+	
 	FILE *file;
 	file = fopen("/root/Desktop/freezelog.txt", "a+");
  
   	/* Initialize Inotify*/
   	fd = inotify_init();
   	if ( fd < 0 ) {
-    		perror( "Couldn't initialize inotify");
+    		perror("Couldn't initialize inotify");
   	}
  
   	/* add watch to starting directory */
-  	wd = inotify_add_watch(fd, "/root/Desktop/freezer", IN_CREATE | IN_MODIFY | IN_DELETE);
+  	wd = inotify_add_watch(fd, "/root/Desktop/freezer", IN_CREATE | IN_MODIFY | IN_DELETE | IN_OPEN);
+
  
   	if (wd == -1) {
       		printf("Could not watch freezer folder");
     	}
   	else {
-      		printf("Watching freezer folder");
+      		printf("Watching freezer folder\n");
     	}
  
   	/* do it forever*/
@@ -47,12 +50,16 @@ int main(int argc, char **argv)
         		if (event->len) {
           			if (event->mask & IN_CREATE) {
             				if (event->mask & IN_ISDIR){
+						char dir [200];
               					printf("The directory %s was Created.\n", event->name );  
-						fprintf(file, "The directory %s was Created.\n", event->name );     
+						fprintf(file, "The directory %s was Created.\n", event->name );
+						strcat(dir, "/root/Desktop/freezer/"); 
+						strcat(dir, event->name); 
+						wd = inotify_add_watch(fd, dir, IN_CREATE | IN_MODIFY | IN_DELETE);    
 					}
             				else{
               					printf("The file %s was Created with WD %d\n", event->name, event->wd );
-	      					fprintf(file, "The file %s was Created with WD %d\n", event->name, event->wd );
+	      					fprintf(file, "CREATE: %s : %d\n", event->name, event->wd );
 					}
           			}
            
@@ -63,7 +70,7 @@ int main(int argc, char **argv)
 					}
 	            			else {
 	              				printf("The file %s was modified with WD %d\n", event->name, event->wd );   
-						fprintf(file, "The file %s was modified with WD %d\n", event->name, event->wd );
+						fprintf(file, "MODIFY: %s : %d\n", event->name, event->wd );
 					} 
           			}
            
@@ -74,9 +81,20 @@ int main(int argc, char **argv)
 					}  
 	            			else{
 	              				printf("The file %s was deleted with WD %d\n", event->name, event->wd );   
-						fprintf(file,"The file %s was deleted with WD %d\n", event->name, event->wd );     
+						fprintf(file,"DELETE: %s : %d\n", event->name, event->wd );     
 					}
 	          		} 
+           
+          			if (event->mask & IN_OPEN) {
+            				if (event->mask & IN_ISDIR){
+              					printf("The directory %s was opened.\n", event->name ); 
+						fprintf(file, "The directory %s was opened.\n", event->name );     
+					}
+	            			else {
+	              				printf("The file %s was opened with WD %d\n", event->name, event->wd );   
+						fprintf(file, "OPEN: %s : %d\n", event->name, event->wd );
+					} 
+          			}
 	 			fflush(file);
 	 
 	          		i += EVENT_SIZE + event->len;
