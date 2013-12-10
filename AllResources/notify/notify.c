@@ -8,7 +8,7 @@
 #define EVENT_SIZE  ( sizeof (struct inotify_event) ) /*size of one event*/
 #define BUF_LEN     ( MAX_EVENTS * ( EVENT_SIZE + LEN_NAME )) /*buffer to store the data of events*/
 
-void createBackup(char dir[], char target[]);
+void createBackup(char path[], char target[]);
 
  
 int main(int argc, char **argv)
@@ -16,10 +16,9 @@ int main(int argc, char **argv)
 	int length, i = 0, wd;
   	int fd;
   	char buffer[BUF_LEN];
-	static char freezeFolder[] = "/root/Desktop/freezer/"; /* TODO: This file is being a butt, lock it down */
-
+	
 	FILE *file;
-	file = fopen("/root/Desktop/freezelog.txt", "a+");
+	file = fopen("/root/Desktop/freezelog.txt", "a+"); /*If log does not exsist, it is created*/
  
   	/* Initialize Inotify*/
   	fd = inotify_init();
@@ -31,10 +30,10 @@ int main(int argc, char **argv)
   	wd = inotify_add_watch(fd, "/root/Desktop/freezer", IN_CREATE | IN_MODIFY | IN_DELETE);
  
   	if (wd == -1) {
-      		printf("Could not watch freezer folder");
+      		printf("Could not watch freezer folder\n");
     	}
   	else {
-      		printf("Watching freezer folder");
+      		printf("Watching freezer folder\n");
     	}
  
   	/* do it forever*/
@@ -42,6 +41,7 @@ int main(int argc, char **argv)
     	{
       		i = 0;
       		length = read(fd, buffer, BUF_LEN ); 
+		//char freezeFolder[] = "/root/Desktop/freezer/";
  
       		if (length < 0) {
         		perror("read");
@@ -53,13 +53,12 @@ int main(int argc, char **argv)
           			if (event->mask & IN_CREATE) {
             				if (event->mask & IN_ISDIR){
               					printf("The directory %s was Created.\n", event->name );  
-						fprintf(file, "The directory %s was Created.\n", event->name );     
+						fprintf(file, "DIRCREATE:%s\n", event->name );     
 					}
             				else{
               					printf("The file %s was Created with WD %d\n", event->name, event->wd );
 	      					fprintf(file, "CREATE:%s:%d\n", event->name, event->wd );
-						createBackup(freezeFolder, event->name);
-						printf("FreezeFolder is :%s\n", freezeFolder);
+						/*createBackup(freezeFolder, event->name);*/
 
 					}
           			}
@@ -67,7 +66,7 @@ int main(int argc, char **argv)
           			if (event->mask & IN_MODIFY) {
             				if (event->mask & IN_ISDIR){
               					printf("The directory %s was modified.\n", event->name ); 
-						fprintf(file, "The directory %s was modified.\n", event->name );     
+						fprintf(file, "DIRMODIFY:%s\n", event->name );     
 					}
 	            			else {
 	              				printf("The file %s was modified with WD %d\n", event->name, event->wd );   
@@ -77,14 +76,29 @@ int main(int argc, char **argv)
            
 	          		if (event->mask & IN_DELETE) {
 	            			if (event->mask & IN_ISDIR){
+						printf("The mask is:%d\n", event->mask);
 	              				printf("The directory %s was deleted.\n", event->name );    
-						fprintf(file, "The directory %s was deleted.\n", event->name );   
+						fprintf(file, "DIRDELETE:%s\n", event->name );   
 					}  
 	            			else{
 	              				printf("The file %s was deleted with WD %d\n", event->name, event->wd );   
 						fprintf(file,"DELETE:%s:%d\n", event->name, event->wd );     
 					}
 	          		} 
+			/*
+				if (event->mask & IN_OPEN) {
+	            			if (event->mask & IN_ISDIR){
+						printf("The mask is:%d\n", event->mask);
+	              				printf("The directory %s was OPENED.\n", event->name );    
+						fprintf(file, "OPENED:%s\n", event->name );   
+					}  
+	            			else{
+	              				printf("The file %s was OPENED with WD %d\n", event->name, event->wd );   
+						fprintf(file,"OPENED:%s:%d\n", event->name, event->wd );     
+					}
+	          		} 
+			*/
+
 	 			fflush(file);
 	 
 	          		i += EVENT_SIZE + event->len;
@@ -99,20 +113,32 @@ int main(int argc, char **argv)
   	getchar();
   	return 0;
 }
-
+/* Changed approach to 
 void createBackup(char path[], char target[]){
-	char orig [] = "";
-	char bkup [] = ".~";
-	strcat(orig, target); /* TODO: Path is copying all the way back up to freezeFolder, which is a problem */
+	char orig[100];
+	char bkup[100];
+	char bkupfile[100] = ".~";
+	strcpy(orig, path);
+	strcat(orig, target);
 	
-	if ((fopen(orig, "r"))==NULL){ /* TODO: Look for backup file, not actuall file */
-		printf("File does not exsist\n");
-		/* If backup file does not exist, make it */
+	strcat(bkupfile, target);
+
+	strcpy(bkup, path);
+	strcat(bkup, bkupfile);
+
+	// bkup contains the fully qualified file location
+	// bkupfile contains only the ".~file
+	 
+	
+	if ((fopen(bkup, "r"))==NULL){ //Look for backup file, not actuall file 
+		printf("Backup does not exsist\n");
+		// If backup file does not exist, make it 
 	}
 	else{
-		printf("File does exsist\n");
+		printf("Backup does exsist\n");
 	}
 
 printf("Path is :%s\n", path);
 	
 }
+*/
