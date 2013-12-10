@@ -1,7 +1,6 @@
-obj-m += notify.o
-
-all:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
-
+all: notify.c parse.c
+	gcc -o notify notify.c
+	gcc -o parse parse.c
 clean:
-	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+	rm notify.o parse.o
+

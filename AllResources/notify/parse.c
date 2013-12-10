@@ -4,25 +4,22 @@
 #include <sys/stat.h>
 
 off_t fsize(const char *filename);
-int renameFile(const char *oldName);
+int retrieveFile(const char *oldName, const char *newName);
 
 int main() 
 {	
 
 	char file_name[25];
 	FILE *fp;
-	strcpy(file_name, "freezelog.txt");
-
-	printf("Getting freezelog.txt...\n");
+	strcpy(file_name, "/root/Desktop/freezelog.txt");
 
 	fp = fopen(file_name, "r");
 	
 	if (fp==NULL) {
-	   perror("Error while opening the file.\n");
+	   perror("Error while opening the log file.\n");
 	   exit(0);
 	}
 	
-	printf("The contents of %s file are\n", file_name);
 	
 	off_t size = fsize(file_name);
 	char string[size];
@@ -41,22 +38,12 @@ int main()
 		wd = strtok(NULL, ":");
 	
 		if (!strcmp(event, "CREATE")){ 
-			if (strstr(name, ".~") != NULL) {
-			renameFile(name);
-			strcpy(root_f, "/root/Desktop/freezer/");
-			strcpy(name_f, name);
-			
-			strcat(root_f, name_f);
-			remove(root_f);
-			
-			}
-			else {
 			strcpy(root_f, "/root/Desktop/freezer/");
 			strcpy(name_f, name);
 		
 			strcat(root_f, name_f);
 			remove(root_f);
-			}
+			
 		}
 
 		else if (!strcmp(event, "MODIFY")) {
@@ -65,8 +52,9 @@ int main()
 		
 		strcat(root_f, name_f);
 		remove(root_f);
+		retrieveFile(name, name);
 		}
-		printf("%s is event, %s is file, %s is id\n", event,name,wd);
+		
 	}	
 	
 	fclose(fp); 
@@ -82,68 +70,55 @@ off_t fsize(const char *filename) {
 		return -1;
 }
 
-int renameFile (const char* oldName) {
+int retrieveFile (const char *oldName, const char *newName) {
 
-	//Create copy of old file name (i.e. .~test) without path
-	char cpyName[64];
-	strcpy(cpyName, oldName);
 
-	// create FILE to read old file and to create new file 
-	FILE *fp_old, *fp_new;
+	// create FILE to read orig file and to copy file in freezer director 
+	FILE *fp_ice, *fp_freeze;
         
-	//manually create paths for old file and new file
-	char oldPath[] = "/root/Desktop/freezer/";
-	char newPath[] = "/root/Desktop/freezer/";
+	//manually create paths for freezer and icebox directory
+	char icePath[] = "/root/Desktop/.icebox/";	
+	char freezePath[] = "/root/Desktop/freezer/";	
 	
-	//declared for new file name 
+	//declared for file name 
+	char ice_path[100];
 	char file_name[100];
 	
-	//setting up entire path of old file (i.e. /root/Desktop/~.test)
-	 strcat(oldPath, cpyName); 
-	
-	
-	//opens oldPath to copy data
-	fp_old = fopen(oldPath, "r");
-	if (fp_old==NULL) {
+	//setting up entire path of icebox file (i.e. /root/Desktop/.icebox/test)
+	strcpy(ice_path, icePath);
+	strcat(ice_path, oldName);
+ 
+	//opens icebox path to copy data
+	fp_ice = fopen(ice_path, "r");
+	if (fp_ice==NULL) {
 	   perror("Error while opening the file.\n");
 	   return;
 	}
 
-	
-	// Used to parse through old file name to take out .~
-	char *s;
-	s = strtok(cpyName, "~");	
-
-	//copies path to file then concatenates new file name (i.e. /root/Desktop/test)
-	strcpy(file_name, newPath); 
-	
-		
-	strcat(file_name, s);
-	
+	//copies path to freezer directory (i.e. /root/Desktop/freezer/test)
+	strcpy(file_name, freezePath);
+	strcat(file_name, newName); 
 	
 	// should create file with new file name 
-	fp_new = fopen(file_name, "a+");
+	fp_freeze = fopen(file_name, "a+");
 	
-	if (fp_new==NULL) {
+	if (fp_freeze==NULL) {
 	   perror("Error while opening the file.\n");
 	   return;
 	}
 	
 	// gets size of 
-	off_t size = fsize(oldPath);
+	off_t size = fsize(icePath);
 	char string[size];
 
-	printf("old file: %s, new path: %s\n", oldPath, file_name);
-
-	// takes in line from old file and copies into new file
-	 while (fgets(string, sizeof(string),fp_old)) {
-		fprintf(fp_new,"%s",string);
+	// takes in line from icebox file and copies into freezer directory
+	 while (fgets(string, sizeof(string),fp_ice)) {
+		fprintf(fp_freeze,"%s",string);
 
 	} 
 	
-	fclose(fp_old);
-	fclose(fp_new);
+	fclose(fp_ice);
+	fclose(fp_freeze);
 	return 0;
 		
 } 
-
