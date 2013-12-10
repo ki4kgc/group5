@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 					}
             				else{
               					printf("The file %s was Created with WD %d\n", event->name, event->wd );
-	      					fprintf(file, "The file %s was Created with WD %d\n", event->name, event->wd );
+	      					fprintf(file, "CREATE:%s:%d\n", event->name, event->wd );
 						createBackup(freezeFolder, event->name);
 						printf("FreezeFolder is :%s\n", freezeFolder);
 
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 					}
 	            			else {
 	              				printf("The file %s was modified with WD %d\n", event->name, event->wd );   
-						fprintf(file, "The file %s was modified with WD %d\n", event->name, event->wd );
+						fprintf(file, "MODIFY:%s:%d\n", event->name, event->wd );
 					} 
           			}
            
@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 					}  
 	            			else{
 	              				printf("The file %s was deleted with WD %d\n", event->name, event->wd );   
-						fprintf(file,"The file %s was deleted with WD %d\n", event->name, event->wd );     
+						fprintf(file,"DELETE:%s:%d\n", event->name, event->wd );     
 					}
 	          		} 
 	 			fflush(file);
@@ -101,9 +101,11 @@ int main(int argc, char **argv)
 }
 
 void createBackup(char path[], char target[]){
-	strcat(path, target); /* TODO: Path is copying all the way back up to freezeFolder, which is a problem */
+	char orig [] = "";
+	char bkup [] = ".~";
+	strcat(orig, target); /* TODO: Path is copying all the way back up to freezeFolder, which is a problem */
 	
-	if ((fopen(path, "r"))==NULL){ /* TODO: Look for backup file, not actuall file */
+	if ((fopen(orig, "r"))==NULL){ /* TODO: Look for backup file, not actuall file */
 		printf("File does not exsist\n");
 		/* If backup file does not exist, make it */
 	}
