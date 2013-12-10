@@ -32,7 +32,7 @@ case $input in
 	   kill -9 $(pidof notify);;
 	r) echo "Filesystem is now rolling back and restart.";
 	   ./parse; 	   
-	   rm -rf ~/Desktop/freezelog.txt;;
+	   rm -rf ~/Desktop/.freezelog.txt;;
 #	   shutdown -r now;;
 	q) echo "Closing userspace application.";
 	   exit 0;;
